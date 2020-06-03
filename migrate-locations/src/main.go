@@ -8,26 +8,14 @@ import (
 
 func main() {
 	initConfig()
-	// check env variables
-	envVariables := []string{
-		config.getCountriesHost,
-		config.getLocationHost,
-		config.getLocationAPIToken,
-		config.getLocationUserEmail,
-		config.getLocationAccessTokenPath,
-		config.getLocationCountriesPath,
-		config.getLocationStatesPath,
-		config.getLocationCitiesPath,
-	}
-
-	for i, v := range envVariables {
-		if v == "" {
-			fmt.Printf("Error: %d %v shouldn't be empty\n", i, v)
-			os.Exit(1)
-		}
-	}
 
 	client := newGetLocationClient(&http.Client{})
+	db, err := NewDBClient(ComposeURL(config.pgPort, config.pgUser, config.pgPassword, config.pgDB, config.pgHost))
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
+	}
+	defer db.Close()
 
 	var countries []getLocationCountry
 	if err := client.GetCountries(&countries); err != nil {
