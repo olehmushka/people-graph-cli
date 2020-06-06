@@ -9,23 +9,20 @@ import (
 func main() {
 	initConfig()
 
-	client := newGetLocationClient(&http.Client{})
+	getCountriesClient := newGetCountriesClient(&http.Client{})
 	db, err := NewDBClient(ComposeURL(config.pgPort, config.pgUser, config.pgPassword, config.pgDB, config.pgHost))
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
-	defer db.Close()
 
-	var countries []getLocationCountry
-	if err := client.GetCountries(&countries); err != nil {
+	var countries2 []getCountryResponse
+	if err := getCountriesClient.GetCountries(&countries2); err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
-	for i, country := range countries {
-		if i > 10 {
-			continue
-		}
-		fmt.Println(country.Name)
+	if err := db.AddCountries(getCountriesMapper(&countries2)); err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
 	}
 }

@@ -103,3 +103,51 @@ func (gl *getLocationClient) requestByURL(method, url string, body io.Reader, co
 
 	return gl.client.Do(req)
 }
+
+type getCountriesClient struct {
+	baseURL string
+	client  httpClient
+}
+
+func newGetCountriesClient(client httpClient) *getCountriesClient {
+	return &getCountriesClient{
+		baseURL: config.getCountriesHost,
+		client:  client,
+	}
+}
+
+func (gc *getCountriesClient) GetCountries(countries *[]getCountryResponse) error {
+	resp, err := gc.request(http.MethodGet, "/all", nil, appJSON)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf(string(b))
+	}
+
+	return json.Unmarshal(b, countries)
+}
+
+func (gc *getCountriesClient) request(method, path string, body io.Reader, contentType string) (*http.Response, error) {
+	url := fmt.Sprintf("%s%s", gc.baseURL, path)
+
+	return gc.requestByURL(method, url, body, contentType)
+}
+
+func (gc *getCountriesClient) requestByURL(method, url string, body io.Reader, contentType string) (*http.Response, error) {
+	req, err := http.NewRequest(method, url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", contentType)
+
+	return gc.client.Do(req)
+}
