@@ -25,5 +25,5 @@ if [ "$1" == "migrate-locations" ]; then
   migrate_locations
   cd ../migrate-country/
   migrate_country "United States" "US"
-  migrate_country "United Kingdom" "UK"
+  migrate_country "United Kingdom" "GB"
 fi

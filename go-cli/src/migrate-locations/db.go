@@ -25,7 +25,7 @@ func NewDBClient(url string) (*DBClient, error) {
 func (db *DBClient) AddCountries(countries *[]Country) error {
 	countryBuff := make([]Country, chunkSize)
 	var counter = 0
-	for _, country := range *countries {
+	for i, country := range *countries {
 		if counter == chunkSize {
 			counter = 0
 			time.Sleep(dbDelay)
@@ -34,6 +34,12 @@ func (db *DBClient) AddCountries(countries *[]Country) error {
 			}
 		}
 		countryBuff[counter] = country
+		if (i + 1) == len(*countries) {
+			time.Sleep(dbDelay)
+			if err := db.insertCountries(&countryBuff); err != nil {
+				return err
+			}
+		}
 		counter++
 	}
 
@@ -65,7 +71,7 @@ func (db *DBClient) insertCountries(countries *[]Country) error {
 func (db *DBClient) AddStates(states *[]State) error {
 	stateBuff := make([]State, chunkSize)
 	var counter = 0
-	for _, state := range *states {
+	for i, state := range *states {
 		if counter == chunkSize {
 			counter = 0
 			time.Sleep(dbDelay)
@@ -74,6 +80,12 @@ func (db *DBClient) AddStates(states *[]State) error {
 			}
 		}
 		stateBuff[counter] = state
+		if (i + 1) == len(*states) {
+			time.Sleep(dbDelay)
+			if err := db.insertStates(&stateBuff); err != nil {
+				return err
+			}
+		}
 		counter++
 	}
 
@@ -105,7 +117,7 @@ func (db *DBClient) insertStates(states *[]State) error {
 func (db *DBClient) AddCities(cities *[]City) error {
 	cityBuff := make([]City, chunkSize)
 	var counter = 0
-	for _, city := range *cities {
+	for i, city := range *cities {
 		if counter == chunkSize {
 			counter = 0
 			time.Sleep(dbDelay)
@@ -114,6 +126,12 @@ func (db *DBClient) AddCities(cities *[]City) error {
 			}
 		}
 		cityBuff[counter] = city
+		if (i + 1) == len(*cities) {
+			time.Sleep(dbDelay)
+			if err := db.insertCities(&cityBuff); err != nil {
+				return err
+			}
+		}
 		counter++
 	}
 

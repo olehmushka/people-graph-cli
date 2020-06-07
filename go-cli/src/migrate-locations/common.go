@@ -5,8 +5,8 @@ import "time"
 const (
 	appJSON = "application/json"
 
-	dbDelay   = 1 * time.Second
-	chunkSize = 10
+	dbDelay   = 500 * time.Millisecond
+	chunkSize = 50
 )
 
 type getLocationAuthResp struct {
